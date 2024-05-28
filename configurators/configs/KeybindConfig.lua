@@ -32,13 +32,13 @@ function KeybindConfig:setGlobalKeys()
         awful.key({ MODKEY,           }, "Escape", awful.tag.history.restore,
             {description = "go back", group = "tag"}),
 
-        awful.key({ MODKEY,           }, "j",
+        awful.key({ MODKEY,           }, "h",
             function ()
                 awful.client.focus.byidx( 1)
             end,
             {description = "focus next by index", group = "client"}
         ),
-        awful.key({ MODKEY,           }, "k",
+        awful.key({ MODKEY,           }, "l",
             function ()
                 awful.client.focus.byidx(-1)
             end,
@@ -50,9 +50,9 @@ function KeybindConfig:setGlobalKeys()
             {description = "swap with next client by index", group = "client"}),
         awful.key({ MODKEY, "Shift"   }, "k", function () awful.client.swap.byidx( -1)    end,
             {description = "swap with previous client by index", group = "client"}),
-        awful.key({ MODKEY, "Control" }, "j", function () awful.screen.focus_relative( 1) end,
+        awful.key({ MODKEY, "Control" }, "h", function () awful.screen.focus_relative( 1) end,
             {description = "focus the next screen", group = "screen"}),
-        awful.key({ MODKEY, "Control" }, "k", function () awful.screen.focus_relative(-1) end,
+        awful.key({ MODKEY, "Control" }, "l", function () awful.screen.focus_relative(-1) end,
             {description = "focus the previous screen", group = "screen"}),
         awful.key({ MODKEY,           }, "u", awful.client.urgent.jumpto,
             {description = "jump to urgent client", group = "client"}),
@@ -73,9 +73,9 @@ function KeybindConfig:setGlobalKeys()
         awful.key({ MODKEY, "Shift"   }, "q", awesome.quit,
             {description = "quit awesome", group = "awesome"}),
 
-        awful.key({ MODKEY,           }, "l",     function () awful.tag.incmwfact( 0.05)          end,
+        awful.key({ MODKEY,           }, ".",     function () awful.tag.incmwfact( 0.05)          end,
             {description = "increase master width factor", group = "layout"}),
-        awful.key({ MODKEY,           }, "h",     function () awful.tag.incmwfact(-0.05)          end,
+        awful.key({ MODKEY,           }, ",",     function () awful.tag.incmwfact(-0.05)          end,
             {description = "decrease master width factor", group = "layout"}),
         awful.key({ MODKEY, "Shift"   }, "h",     function () awful.tag.incnmaster( 1, nil, true) end,
             {description = "increase the number of master clients", group = "layout"}),
@@ -232,7 +232,6 @@ function KeybindConfig:createClientButtons()
             awful.mouse.client.resize(c)
         end)
     )
-
 end
 
 return KeybindConfig:new(nil)

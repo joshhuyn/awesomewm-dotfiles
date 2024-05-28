@@ -70,7 +70,7 @@ function ThemeConfig:setupTheme()
     theme.widget_mail = theme.resDir .. "/icons/mail.png"
     theme.widget_mail_on = theme.resDir .. "/icons/mail_on.png"
     theme.tasklist_plain_task_name = true
-    theme.tasklist_disable_icon = true
+    theme.tasklist_disable_icon = false
     theme.useless_gap = dpi(2)
     theme.titlebar_close_button_focus = theme.resDir .. "/icons/titlebar/close_focus.png"
     theme.titlebar_close_button_normal = theme.resDir .. "/icons/titlebar/close_normal.png"
@@ -112,9 +112,145 @@ function ThemeConfig:setupLayout()
     }
 end
 
-function ThemeConfig:createHud(s, tasklist, taglist, mylauncher)
+function ThemeConfig:createHud(s, tasklist_buttons, taglist_buttons, mylauncher)
+    s.mypromptbox = awful.widget.prompt()
+
+    s.mytasklist = awful.widget.tasklist {
+        screen = s,
+        filter = awful.widget.tasklist.filter.currenttags,
+        buttons = tasklist_buttons,
+        layout = {
+            spacing_widget = {
+                {
+                    forced_width = 5,
+                    forced_height = 24,
+                    thickness = 1,
+                    color = "#777777",
+                    widget = wibox.widget.separator
+                },
+                valign = 'center',
+                halign = 'center',
+                widget = wibox.container.place,
+            },
+            spacing = 1,
+            layout = wibox.layout.fixed.horizontal
+        },
+        widget_template = {
+            {
+                wibox.widget.base.make_widget(),
+                forced_height = 1,
+                id = "background_role",
+                widget = wibox.container.background,
+            },
+            {
+                {
+                    id = "clienticon",
+                    widget = awful.widget.clienticon,
+                },
+                margins = 5,
+                widget = wibox.container.margin
+            },
+            nil,
+            create_callback = function(self, c, index, objects)
+                self:get_children_by_id("clienticon")[1].client = c
+            end,
+            layout = wibox.layout.align.vertical,
+        }
+    }
+
+    s.mylayoutbox = awful.widget.layoutbox(s)
+    s.mylayoutbox:buttons(
+        gears.table.join(
+            awful.button({ }, 1, function () awful.layout.inc( 1) end),
+            awful.button({ }, 3, function () awful.layout.inc(-1) end),
+            awful.button({ }, 4, function () awful.layout.inc( 1) end),
+            awful.button({ }, 5, function () awful.layout.inc(-1) end)
+        )
+    )
+
+    local wiboxHeight = beautiful.get_font_height(nil) * 1.5
+    local gap = beautiful.useless_gap
+
+    -- topRight
+
+    local topRight = wibox({
+        screen = s,
+        width = dpi(300),
+        height = wiboxHeight
+    })
+
+    topRight:setup({
+        {
+            layout = wibox.layout.align.horizontal,
+            {
+                layout = wibox.layout.fixed.horizontal,
+                awful.widget.keyboardlayout(),
+                wibox.widget.systray(),
+                -- battery TODO 
+            },
+            wibox.widget.textclock(),
+            {
+                layout = wibox.layout.fixed.horizontal,
+                s.mylayoutbox,
+            }
+        },
+        widget = wibox.container.margin
+    })
+
+    topRight.x = s.geometry.x + s.geometry.width - topRight.width - gap
+    topRight.y = s.geometry.y + gap
+    topRight.ontop = true
+    topRight.visible = true
+
+    local middleBottom = wibox({
+        screen = s,
+        width = s.geometry.width / 2,
+        height = wiboxHeight * 2,
+        shape = function(cr, width, height)
+            gears.shape.rounded_bar(cr, width, height)
+        end
+    })
+
+    middleBottom:setup {
+        layout = wibox.layout.align.horizontal,
+        s.mytasklist
+    }
+
+    middleBottom.x = s.geometry.x + s.geometry.width / 2 - middleBottom.width / 2
+    middleBottom.y = s.geometry.y + s.geometry.height - middleBottom.height - gap
+    middleBottom.ontop = true
+    middleBottom.visible = true
+
+    s.mywibox = {
+        BR = topRight,
+        MB = middleBottom
+    }
+
+    --s.mywibox:setup {
+        --layout = wibox.layout.align.horizontal,
+        --{ -- Left widgets
+            --layout = wibox.layout.fixed.horizontal,
+            --mylauncher,
+            --s.mytaglist,
+            --s.mypromptbox,
+        --},
+        --s.mytasklist, -- Middle widget
+        --{ -- Right widgets
+            --layout = wibox.layout.fixed.horizontal,
+            --awful.widget.keyboardlayout(),
+            --wibox.widget.systray(),
+            --wibox.widget.textclock(),
+            --s.mylayoutbox,
+        --},
+    --}
+
+end
+
+function ThemeConfig:createHud2(s, tasklist, taglist, mylauncher)
+
     -- Create a promptbox for each screen
     s.mypromptbox = awful.widget.prompt()
+
     -- Create an imagebox widget which will contain an icon indicating which layout we're using.
     -- We need one layoutbox per screen.
     s.mylayoutbox = awful.widget.layoutbox(s)
@@ -123,6 +259,7 @@ function ThemeConfig:createHud(s, tasklist, taglist, mylauncher)
                            awful.button({ }, 3, function () awful.layout.inc(-1) end),
                            awful.button({ }, 4, function () awful.layout.inc( 1) end),
                            awful.button({ }, 5, function () awful.layout.inc(-1) end)))
+    --
     -- Create a taglist widget
     s.mytaglist = awful.widget.taglist {
         screen  = s,

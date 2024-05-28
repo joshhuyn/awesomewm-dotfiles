@@ -118,12 +118,8 @@ function ConfigHandler:addWibar()
         awful.tag({ "1", "2", "3", "4", "5"}, s, awful.layout.layouts[1])
 
         self:setWallpaper(s)
-        self:createHud(s, tasklist_buttons, taglist_buttons, mylauncher)
+        self.themeConfig:createHud(s, tasklist_buttons, taglist_buttons, mylauncher)
     end)
-end
-
-function ConfigHandler:createHud(s, tasklist, taglist, myLauncher)
-    self.themeConfig:createHud(s, tasklist, taglist, myLauncher)
 end
 
 function ConfigHandler:setMouse()

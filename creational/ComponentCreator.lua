@@ -75,7 +75,9 @@ function ComponentCreator:createTasklistButtons()
                 c:emit_signal(
                     "request::activate",
                     "tasklist",
-                    {raise = true}
+                    {
+                        raise = true
+                    }
                 )
             end
         end),
