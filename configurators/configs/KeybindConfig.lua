@@ -1,7 +1,9 @@
 local awful = require("awful")
+local beautiful = require("beautiful")
 local gears = require("gears")
 local hotkeys_popup = require("awful.hotkeys_popup")
 local menubar = require("menubar")
+local naughty = require("naughty")
 
 KeybindConfig = { }
 
@@ -103,8 +105,10 @@ function KeybindConfig:setGlobalKeys()
             {description = "restore minimized", group = "client"}),
 
         -- Prompt
-        awful.key({ MODKEY },            "r",     function () awful.screen.focused().mypromptbox:run() end,
-            {description = "run prompt", group = "launcher"}),
+        awful.key({ MODKEY },            "r",     function ()
+            awful.screen.focused().mywibox.cmd.visible = true
+            awful.screen.focused().mypromptbox:run()
+        end, {description = "run prompt", group = "launcher"}),
 
         awful.key({ MODKEY }, "x",
             function ()
@@ -112,15 +116,50 @@ function KeybindConfig:setGlobalKeys()
                     prompt       = "Run Lua code: ",
                     textbox      = awful.screen.focused().mypromptbox.widget,
                     exe_callback = awful.util.eval,
-                    history_path = awful.util.get_cache_dir() .. "/history_eval"
+                    history_path = awful.util.get_cache_dir() .. "/history_eval",
+                    done_callback = function(result)
+                        naughty.notify(tostring(result))
+                        awful.screen.focused().mywibox.cmd.visible = false
+                    end
                 }
             end,
             {description = "lua execute prompt", group = "awesome"}),
         -- Menubar
         awful.key({ MODKEY }, "p", function() menubar.show() end,
-            {description = "show the menubar", group = "launcher"})
-    )
+            {description = "show the menubar", group = "launcher"}),
 
+        awful.key({ MODKEY }, "e", function()
+            for s in screen do 
+                for key, val in pairs(s.mywibox) do
+                    if key ~= "cmd" then
+                        val.visible = not val.visible
+                        val.input_passthrough = not val.input_passthrough
+                    end
+                end
+
+                if s.mywibox.MB.visible then
+                    s.mywibox.MB:struts({
+                        top = 0,
+                        left = 0,
+                        bottom = (s.mywibox.MB.visible and s.mywibox.MB.height + beautiful.useless_gap or 0),
+                        right = 0,
+                    })
+                end
+
+                if s.mywibox.TL.visible then
+                    s.mywibox.TL:struts({
+                        top = (s.mywibox.TL.visible and s.mywibox.TL.height + beautiful.useless_gap or 0),
+                        left = 0,
+                        bottom = 0,
+                        right = 0
+                    })
+                end
+            end
+        end, {
+                description = "hide ui elements",
+                group = "custom"
+            })
+    )
 
     for i = 1, 5 do
         globalKeys = gears.table.join(globalKeys,

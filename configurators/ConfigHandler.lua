@@ -29,6 +29,7 @@ function ConfigHandler:setup()
 
     self.themeConfig:setupTheme()
     self.themeConfig:setupLayout()
+    self.themeConfig:createPrompt()
 
     self.themeConfig:setupTitlebar()
 
@@ -112,13 +113,12 @@ end
 function ConfigHandler:addWibar()
     local taglist_buttons = self.componentFactory.createTaglistButtons()
     local tasklist_buttons = self.componentFactory.createTasklistButtons()
-    local mylauncher = self.componentFactory.createLauncher()
 
     awful.screen.connect_for_each_screen(function(s)
         awful.tag({ "1", "2", "3", "4", "5"}, s, awful.layout.layouts[1])
 
         self:setWallpaper(s)
-        self.themeConfig:createHud(s, tasklist_buttons, taglist_buttons, mylauncher)
+        self.themeConfig:createHud(s, tasklist_buttons, taglist_buttons)
     end)
 end
 

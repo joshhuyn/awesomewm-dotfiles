@@ -3,6 +3,7 @@ local beautiful = require("beautiful")
 local dpi   = require("beautiful.xresources").apply_dpi
 local gears = require("gears")
 local wibox = require("wibox")
+local naughty = require("naughty")
 
 ThemeConfig = { }
 
@@ -112,8 +113,24 @@ function ThemeConfig:setupLayout()
     }
 end
 
-function ThemeConfig:createHud(s, tasklist_buttons, taglist_buttons, mylauncher)
-    s.mypromptbox = awful.widget.prompt()
+function ThemeConfig:createPrompt()
+    for s in screen do
+        s.mypromptbox = awful.widget.prompt {
+            prompt = "Run: ",
+            done_callback = function(result)
+                naughty.notify(tostring(result))
+                awful.screen.focused().mywibox.cmd.visible = false
+            end
+        }
+    end
+end
+
+function ThemeConfig:createHud(s, tasklist_buttons, taglist_buttons)
+    s.mytaglist = awful.widget.taglist {
+        screen  = s,
+        filter  = awful.widget.taglist.filter.all,
+        buttons = taglist_buttons
+    }
 
     s.mytasklist = awful.widget.tasklist {
         screen = s,
@@ -171,13 +188,7 @@ function ThemeConfig:createHud(s, tasklist_buttons, taglist_buttons, mylauncher)
     local wiboxHeight = beautiful.get_font_height(nil) * 1.5
     local gap = beautiful.useless_gap
 
-    -- topRight
-
-    local topRight = wibox({
-        screen = s,
-        width = dpi(300),
-        height = wiboxHeight
-    })
+    local topRight = wibox({ width = dpi(300), height = wiboxHeight })
 
     topRight:setup({
         {
@@ -199,11 +210,8 @@ function ThemeConfig:createHud(s, tasklist_buttons, taglist_buttons, mylauncher)
 
     topRight.x = s.geometry.x + s.geometry.width - topRight.width - gap
     topRight.y = s.geometry.y + gap
-    topRight.ontop = true
-    topRight.visible = true
 
     local middleBottom = wibox({
-        screen = s,
         width = s.geometry.width / 2,
         height = wiboxHeight * 2,
         shape = function(cr, width, height)
@@ -218,83 +226,58 @@ function ThemeConfig:createHud(s, tasklist_buttons, taglist_buttons, mylauncher)
 
     middleBottom.x = s.geometry.x + s.geometry.width / 2 - middleBottom.width / 2
     middleBottom.y = s.geometry.y + s.geometry.height - middleBottom.height - gap
-    middleBottom.ontop = true
-    middleBottom.visible = true
+
+    local topLeft = wibox({ width = dpi(100), height = wiboxHeight })
+
+    topLeft:setup({
+        {
+            layout = wibox.layout.align.horizontal,
+            s.mytaglist
+        },
+        top = 4,
+        bottom = 4,
+        widget = wibox.container.margin
+    })
+
+    topLeft.x = s.geometry.x + gap
+    topLeft.y = s.geometry.y + gap
+
+    local commandPrompt = wibox({ width = dpi(300), height = wiboxHeight })
+
+    commandPrompt:setup({
+        {
+            layout = wibox.layout.align.horizontal,
+            s.mypromptbox
+        },
+        top = 4,
+        bottom = 4,
+        widget = wibox.container.margin,
+    })
+
+    commandPrompt.x = s.geometry.x + s.geometry.width / 2 - commandPrompt.width / 2
+    commandPrompt.y = s.geometry.y + s.geometry.height / 2
+
 
     s.mywibox = {
-        BR = topRight,
-        MB = middleBottom
+        TL = topLeft,
+        TR = topRight,
+        MB = middleBottom,
+        cmd = commandPrompt
     }
 
-    --s.mywibox:setup {
-        --layout = wibox.layout.align.horizontal,
-        --{ -- Left widgets
-            --layout = wibox.layout.fixed.horizontal,
-            --mylauncher,
-            --s.mytaglist,
-            --s.mypromptbox,
-        --},
-        --s.mytasklist, -- Middle widget
-        --{ -- Right widgets
-            --layout = wibox.layout.fixed.horizontal,
-            --awful.widget.keyboardlayout(),
-            --wibox.widget.systray(),
-            --wibox.widget.textclock(),
-            --s.mylayoutbox,
-        --},
-    --}
+    for _, val in pairs(s.mywibox) do
+        val.screen = s
 
-end
+        val.ontop = true
+        val.visible = true
+        val.input_passthrough = false
 
-function ThemeConfig:createHud2(s, tasklist, taglist, mylauncher)
+        if val.shape == nil then
+            val.shape = gears.shape.rounded_bar
+        end
+    end
 
-    -- Create a promptbox for each screen
-    s.mypromptbox = awful.widget.prompt()
-
-    -- Create an imagebox widget which will contain an icon indicating which layout we're using.
-    -- We need one layoutbox per screen.
-    s.mylayoutbox = awful.widget.layoutbox(s)
-    s.mylayoutbox:buttons(gears.table.join(
-                           awful.button({ }, 1, function () awful.layout.inc( 1) end),
-                           awful.button({ }, 3, function () awful.layout.inc(-1) end),
-                           awful.button({ }, 4, function () awful.layout.inc( 1) end),
-                           awful.button({ }, 5, function () awful.layout.inc(-1) end)))
-    --
-    -- Create a taglist widget
-    s.mytaglist = awful.widget.taglist {
-        screen  = s,
-        filter  = awful.widget.taglist.filter.all,
-        buttons = taglist
-    }
-
-    -- Create a tasklist widget
-    s.mytasklist = awful.widget.tasklist {
-        screen  = s,
-        filter  = awful.widget.tasklist.filter.currenttags,
-        buttons = tasklist
-    }
-
-    -- Create the wibox
-    s.mywibox = awful.wibar({ position = "top", screen = s })
-
-    -- Add widgets to the wibox
-    s.mywibox:setup {
-        layout = wibox.layout.align.horizontal,
-        { -- Left widgets
-            layout = wibox.layout.fixed.horizontal,
-            mylauncher,
-            s.mytaglist,
-            s.mypromptbox,
-        },
-        s.mytasklist, -- Middle widget
-        { -- Right widgets
-            layout = wibox.layout.fixed.horizontal,
-            awful.widget.keyboardlayout(),
-            wibox.widget.systray(),
-            wibox.widget.textclock(),
-            s.mylayoutbox,
-        },
-    }
+    commandPrompt.visible = false
 end
 
 function ThemeConfig:setupTitlebar()

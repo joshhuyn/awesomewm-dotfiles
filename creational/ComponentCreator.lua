@@ -40,13 +40,6 @@ function ComponentCreator:createMainMenu()
 
 end
 
-function ComponentCreator:createLauncher()
-    return awful.widget.launcher({
-        image = beautiful.awesome_icon,
-        menu = MYMAINMENU
-    })
-end
-
 function ComponentCreator:createTaglistButtons()
     return gears.table.join(
         awful.button({ }, 1, function(t) t:view_only() end),
