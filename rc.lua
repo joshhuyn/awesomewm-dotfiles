@@ -1,5 +1,7 @@
 pcall(require, "luarocks.loader")
 
+os.execute("~/.config/awesome/prestartup.sh")
+
 require("awful.autofocus")
 require("awful.hotkeys_popup.keys")
 

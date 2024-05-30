@@ -12,6 +12,9 @@ function KeybindConfig:new(o)
     setmetatable(o, self)
     self.__index = self
 
+    KEYVAR = "colemak"
+    self:setKEYMAP()
+
     return o
 end
 
@@ -23,24 +26,65 @@ function KeybindConfig:setMouse()
     ))
 end
 
+function KeybindConfig:setKEYMAP()
+    KEYMAP = { }
+
+    KEYMAP.q = self:getKeymap("q", "q")
+    KEYMAP.w = self:getKeymap("w", "w")
+    KEYMAP.e = self:getKeymap("e", "f")
+    KEYMAP.r = self:getKeymap("r", "p")
+    KEYMAP.t = self:getKeymap("t", "g")
+    KEYMAP.y = self:getKeymap("y", "j")
+    KEYMAP.u = self:getKeymap("u", "l")
+    KEYMAP.i = self:getKeymap("i", "u")
+    KEYMAP.o = self:getKeymap("o", "y")
+    KEYMAP.p = self:getKeymap("p", ";")
+    KEYMAP.a = self:getKeymap("a", "a")
+    KEYMAP.s = self:getKeymap("s", "r")
+    KEYMAP.d = self:getKeymap("d", "s")
+    KEYMAP.f = self:getKeymap("f", "t")
+    KEYMAP.g = self:getKeymap("g", "d")
+    KEYMAP.h = self:getKeymap("h", "h")
+    KEYMAP.j = self:getKeymap("j", "n")
+    KEYMAP.k = self:getKeymap("k", "e")
+    KEYMAP.l = self:getKeymap("l", "i")
+    KEYMAP.semi = self:getKeymap(";", "o")
+    KEYMAP.z = self:getKeymap("z", "z")
+    KEYMAP.x = self:getKeymap("x", "x")
+    KEYMAP.c = self:getKeymap("c", "c")
+    KEYMAP.v = self:getKeymap("v", "v")
+    KEYMAP.b = self:getKeymap("b", "b")
+    KEYMAP.n = self:getKeymap("n", "k")
+    KEYMAP.m = self:getKeymap("m", "m")
+end
+
+function KeybindConfig:getKeymap(key1, key2)
+    return key2
+    --if KEYVAR ~= nil or KEYVAR == "qwerty" then
+        --return key1
+    --else
+        --return key2
+    --end
+end
+
 function KeybindConfig:setGlobalKeys()
     local globalKeys = gears.table.join(
-        awful.key({ MODKEY,           }, "s",      hotkeys_popup.show_help,
+        awful.key({ MODKEY,           }, KEYMAP.s,      hotkeys_popup.show_help,
             {description="show help", group="awesome"}),
-        awful.key({ MODKEY,           }, "j",   awful.tag.viewprev,
+        awful.key({ MODKEY,           }, KEYMAP.j,   awful.tag.viewprev,
             {description = "view previous", group = "tag"}),
-        awful.key({ MODKEY,           }, "k",  awful.tag.viewnext,
+        awful.key({ MODKEY,           }, KEYMAP.k,  awful.tag.viewnext,
             {description = "view next", group = "tag"}),
         awful.key({ MODKEY,           }, "Escape", awful.tag.history.restore,
             {description = "go back", group = "tag"}),
 
-        awful.key({ MODKEY,           }, "h",
+        awful.key({ MODKEY,           }, KEYMAP.h,
             function ()
                 awful.client.focus.byidx( 1)
             end,
             {description = "focus next by index", group = "client"}
         ),
-        awful.key({ MODKEY,           }, "l",
+        awful.key({ MODKEY,           }, KEYMAP.l,
             function ()
                 awful.client.focus.byidx(-1)
             end,
@@ -48,15 +92,15 @@ function KeybindConfig:setGlobalKeys()
         ),
 
         -- Layout manipulation
-        awful.key({ MODKEY, "Shift"   }, "j", function () awful.client.swap.byidx(  1)    end,
+        awful.key({ MODKEY, "Shift"   }, KEYMAP.j, function () awful.client.swap.byidx(  1)    end,
             {description = "swap with next client by index", group = "client"}),
-        awful.key({ MODKEY, "Shift"   }, "k", function () awful.client.swap.byidx( -1)    end,
+        awful.key({ MODKEY, "Shift"   }, KEYMAP.k, function () awful.client.swap.byidx( -1)    end,
             {description = "swap with previous client by index", group = "client"}),
-        awful.key({ MODKEY, "Control" }, "h", function () awful.screen.focus_relative( 1) end,
+        awful.key({ MODKEY, "Control" }, KEYMAP.h, function () awful.screen.focus_relative( 1) end,
             {description = "focus the next screen", group = "screen"}),
-        awful.key({ MODKEY, "Control" }, "l", function () awful.screen.focus_relative(-1) end,
+        awful.key({ MODKEY, "Control" }, KEYMAP.l, function () awful.screen.focus_relative(-1) end,
             {description = "focus the previous screen", group = "screen"}),
-        awful.key({ MODKEY,           }, "u", awful.client.urgent.jumpto,
+        awful.key({ MODKEY,           }, KEYMAP.u, awful.client.urgent.jumpto,
             {description = "jump to urgent client", group = "client"}),
         awful.key({ MODKEY,           }, "Tab",
             function ()
@@ -70,29 +114,29 @@ function KeybindConfig:setGlobalKeys()
         -- Standard program
         awful.key({ MODKEY,           }, "Return", function () awful.spawn(TERMINAL) end,
             {description = "open a terminal", group = "launcher"}),
-        awful.key({ MODKEY, "Control" }, "r", awesome.restart,
+        awful.key({ MODKEY, "Control" }, KEYMAP.r, awesome.restart,
             {description = "reload awesome", group = "awesome"}),
-        awful.key({ MODKEY, "Shift"   }, "q", awesome.quit,
+        awful.key({ MODKEY, "Shift"   }, KEYMAP.q, awesome.quit,
             {description = "quit awesome", group = "awesome"}),
 
         awful.key({ MODKEY,           }, ".",     function () awful.tag.incmwfact( 0.05)          end,
             {description = "increase master width factor", group = "layout"}),
         awful.key({ MODKEY,           }, ",",     function () awful.tag.incmwfact(-0.05)          end,
             {description = "decrease master width factor", group = "layout"}),
-        awful.key({ MODKEY, "Shift"   }, "h",     function () awful.tag.incnmaster( 1, nil, true) end,
+        awful.key({ MODKEY, "Shift"   }, KEYMAP.h,     function () awful.tag.incnmaster( 1, nil, true) end,
             {description = "increase the number of master clients", group = "layout"}),
-        awful.key({ MODKEY, "Shift"   }, "l",     function () awful.tag.incnmaster(-1, nil, true) end,
+        awful.key({ MODKEY, "Shift"   }, KEYMAP.l,     function () awful.tag.incnmaster(-1, nil, true) end,
             {description = "decrease the number of master clients", group = "layout"}),
-        awful.key({ MODKEY, "Control" }, "h",     function () awful.tag.incncol( 1, nil, true)    end,
+        awful.key({ MODKEY, "Control" }, KEYMAP.h,     function () awful.tag.incncol( 1, nil, true)    end,
             {description = "increase the number of columns", group = "layout"}),
-        awful.key({ MODKEY, "Control" }, "l",     function () awful.tag.incncol(-1, nil, true)    end,
+        awful.key({ MODKEY, "Control" }, KEYMAP.l,     function () awful.tag.incncol(-1, nil, true)    end,
             {description = "decrease the number of columns", group = "layout"}),
         awful.key({ MODKEY,           }, "space", function () awful.layout.inc( 1)                end,
             {description = "select next", group = "layout"}),
         awful.key({ MODKEY, "Shift"   }, "space", function () awful.layout.inc(-1)                end,
             {description = "select previous", group = "layout"}),
 
-        awful.key({ MODKEY, "Control" }, "n",
+        awful.key({ MODKEY, "Control" }, KEYMAP.n,
             function ()
                 local c = awful.client.restore()
                 -- Focus restored client
@@ -105,12 +149,12 @@ function KeybindConfig:setGlobalKeys()
             {description = "restore minimized", group = "client"}),
 
         -- Prompt
-        awful.key({ MODKEY },            "r",     function ()
+        awful.key({ MODKEY },            KEYMAP.r,     function ()
             awful.screen.focused().mywibox.cmd.visible = true
             awful.screen.focused().mypromptbox:run()
         end, {description = "run prompt", group = "launcher"}),
 
-        awful.key({ MODKEY }, "x",
+        awful.key({ MODKEY }, KEYMAP.x,
             function ()
                 awful.prompt.run {
                     prompt       = "Run Lua code: ",
@@ -125,10 +169,10 @@ function KeybindConfig:setGlobalKeys()
             end,
             {description = "lua execute prompt", group = "awesome"}),
         -- Menubar
-        awful.key({ MODKEY }, "p", function() menubar.show() end,
+        awful.key({ MODKEY }, KEYMAP.p, function() menubar.show() end,
             {description = "show the menubar", group = "launcher"}),
 
-        awful.key({ MODKEY }, "e", function()
+        awful.key({ MODKEY }, KEYMAP.e, function()
             for s in screen do 
                 for key, val in pairs(s.mywibox) do
                     if key ~= "cmd" then
@@ -213,42 +257,42 @@ end
 
 function KeybindConfig:createClientKeys()
     return gears.table.join(
-        awful.key({ MODKEY,           }, "f",
+        awful.key({ MODKEY,           }, KEYMAP.f,
             function (c)
                 c.fullscreen = not c.fullscreen
                 c:raise()
             end,
             {description = "toggle fullscreen", group = "client"}),
-        awful.key({ MODKEY, "Shift"   }, "c",      function (c) c:kill()                         end,
+        awful.key({ MODKEY, "Shift"   }, KEYMAP.c,      function (c) c:kill()                         end,
             {description = "close", group = "client"}),
         awful.key({ MODKEY, "Control" }, "space",  awful.client.floating.toggle                     ,
             {description = "toggle floating", group = "client"}),
         awful.key({ MODKEY, "Control" }, "Return", function (c) c:swap(awful.client.getmaster()) end,
             {description = "move to master", group = "client"}),
-        awful.key({ MODKEY,           }, "o",      function (c) c:move_to_screen()               end,
+        awful.key({ MODKEY,           }, KEYMAP.o,      function (c) c:move_to_screen()               end,
             {description = "move to screen", group = "client"}),
-        awful.key({ MODKEY,           }, "t",      function (c) c.ontop = not c.ontop            end,
+        awful.key({ MODKEY,           }, KEYMAP.t,      function (c) c.ontop = not c.ontop            end,
             {description = "toggle keep on top", group = "client"}),
-        awful.key({ MODKEY,           }, "n",
+        awful.key({ MODKEY,           }, KEYMAP.n,
             function (c)
                 -- The client currently has the input focus, so it cannot be
                 -- minimized, since minimized clients can't have the focus.
                 c.minimized = true
             end ,
             {description = "minimize", group = "client"}),
-        awful.key({ MODKEY,           }, "m",
+        awful.key({ MODKEY,           }, KEYMAP.m,
             function (c)
                 c.maximized = not c.maximized
                 c:raise()
             end ,
             {description = "(un)maximize", group = "client"}),
-        awful.key({ MODKEY, "Control" }, "m",
+        awful.key({ MODKEY, "Control" }, KEYMAP.m,
             function (c)
                 c.maximized_vertical = not c.maximized_vertical
                 c:raise()
             end ,
             {description = "(un)maximize vertically", group = "client"}),
-        awful.key({ MODKEY, "Shift"   }, "m",
+        awful.key({ MODKEY, "Shift"   }, KEYMAP.m,
             function (c)
                 c.maximized_horizontal = not c.maximized_horizontal
                 c:raise()
