@@ -1,6 +1,7 @@
 pcall(require, "luarocks.loader")
 
 os.execute("~/.config/awesome/prestartup.sh")
+IS_MOUSE_LOCKED = false
 
 require("awful.autofocus")
 require("awful.hotkeys_popup.keys")
@@ -17,6 +18,32 @@ client.connect_signal("manage", function (c)
     if awesome.startup and not c.size_hints.user_position and not c.size_hints.program_position then
         awful.placement.no_offscreen(c)
     end
+
+    c:connect_signal("mouse::leave", function(c)
+        if IS_MOUSE_LOCKED then
+            local margin = 5
+            local cg = c:geometry()
+            local mg = mouse.coords()
+
+            local newx = mg.x
+
+            if mg.x <= cg.x then
+                newx = cg.x + margin
+            elseif mg.x >= cg.x  + cg.width then
+                newx = cg.x + cg.width - margin
+            end
+
+            local newy = mg.y
+
+            if mg.y <= cg.y then
+                newy = cg.y + margin
+            elseif mg.y >= cg.y + cg.height then
+                newy = cg.y + cg.height - margin
+            end
+
+            mouse.coords({ x = newx, y = newy })
+        end
+    end)
 end)
 
 client.connect_signal("focus", function(c)

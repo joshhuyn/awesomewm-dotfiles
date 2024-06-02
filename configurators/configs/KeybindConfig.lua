@@ -172,8 +172,10 @@ function KeybindConfig:setGlobalKeys()
         awful.key({ MODKEY }, KEYMAP.p, function() menubar.show() end,
             {description = "show the menubar", group = "launcher"}),
 
+        awful.key({ MODKEY, "Shift" }, KEYMAP.e, function() IS_MOUSE_LOCKED = not IS_MOUSE_LOCKED end),
+
         awful.key({ MODKEY }, KEYMAP.e, function()
-            for s in screen do 
+            for s in screen do
                 for key, val in pairs(s.mywibox) do
                     if key ~= "cmd" then
                         val.visible = not val.visible
