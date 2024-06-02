@@ -59,7 +59,7 @@ function KeybindConfig:setKEYMAP()
 end
 
 function KeybindConfig:getKeymap(key1, key2)
-    return key2
+    return key1
     --if KEYVAR ~= nil or KEYVAR == "qwerty" then
         --return key1
     --else

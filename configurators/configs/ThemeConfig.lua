@@ -28,9 +28,9 @@ function ThemeConfig:setupTheme()
     theme.bg_normal = "#1A1A1A"
     theme.bg_focus = "#313131"
     theme.bg_urgent = "#1A1A1A"
-    theme.border_width = dpi(1)
-    theme.border_normal = "#0"
-    theme.border_focus = "#3F3F3F"
+    theme.border_width = dpi(4)
+    theme.border_normal = "#00000000"
+    theme.border_focus = "#189BCC"
     theme.border_marked = "#0"
     theme.tasklist_bg_focus = "#1A1A1A"
     theme.titlebar_bg_focus = theme.bg_focus

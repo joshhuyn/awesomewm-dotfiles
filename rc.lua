@@ -6,6 +6,7 @@ require("awful.autofocus")
 require("awful.hotkeys_popup.keys")
 
 local awful = require("awful")
+local gears = require("gears")
 local beautiful = require("beautiful")
 local configHandler = require("configurators/ConfigHandler"):setup()
 
@@ -18,5 +19,17 @@ client.connect_signal("manage", function (c)
     end
 end)
 
-client.connect_signal("focus", function(c) c.border_color = beautiful.border_focus end)
-client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
+client.connect_signal("focus", function(c)
+    c.shape = function(cr, width, height)
+        gears.shape.partially_rounded_rect(cr, width, height, false, false, false, false)
+    end
+    c.border_color = beautiful.border_focus
+    c.border_width = beautiful.border_width
+end)
+client.connect_signal("unfocus", function(c)
+    c.shape = function(cr, width, height)
+        gears.shape.rounded_rect(cr, width, height)
+    end
+    c.border_color = beautiful.border_normal
+    c.border_width = beautiful.border_width
+end)
