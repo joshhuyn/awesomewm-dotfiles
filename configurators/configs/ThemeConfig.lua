@@ -23,12 +23,12 @@ function ThemeConfig:setupTheme()
     theme.wallpaper = theme.resDir .. "/space.png"
     theme.font = "Hack 12"
     theme.fg_normal = "#DDDDFF"
-    theme.fg_focus = "#EA6F81"
+    theme.fg_focus = "#189BCC"
     theme.fg_urgent = "#CC9393"
-    theme.bg_normal = "#1A1A1A"
-    theme.bg_focus = "#313131"
-    theme.bg_urgent = "#1A1A1A"
-    theme.border_width = dpi(4)
+    theme.bg_normal = "#14213d"
+    theme.bg_focus = "#00"
+    theme.bg_urgent = "#14213d"
+    theme.border_width = dpi(2)
     theme.border_normal = "#00000000"
     theme.border_focus = "#189BCC"
     theme.border_marked = "#0"
@@ -154,12 +154,6 @@ function ThemeConfig:createHud(s, tasklist_buttons, taglist_buttons)
         },
         widget_template = {
             {
-                wibox.widget.base.make_widget(),
-                forced_height = 1,
-                id = "background_role",
-                widget = wibox.container.background,
-            },
-            {
                 {
                     id = "clienticon",
                     widget = awful.widget.clienticon,
@@ -188,44 +182,56 @@ function ThemeConfig:createHud(s, tasklist_buttons, taglist_buttons)
     local wiboxHeight = beautiful.get_font_height(nil) * 1.5
     local gap = beautiful.useless_gap
 
-    local topRight = wibox({ width = dpi(300), height = wiboxHeight })
-
-    topRight:setup({
-        {
-            layout = wibox.layout.align.horizontal,
+    local topRight = awful.popup {
+        widget = {
             {
-                layout = wibox.layout.fixed.horizontal,
-                awful.widget.keyboardlayout(),
-                wibox.widget.systray(),
-                -- battery TODO 
+                layout = wibox.layout.align.horizontal,
+                {
+                    layout = wibox.layout.fixed.horizontal,
+                    awful.widget.keyboardlayout(),
+                    wibox.widget.systray(),
+                    -- battery TODO 
+                },
+                wibox.widget.textclock(),
+                {
+                    layout = wibox.layout.fixed.horizontal,
+                    s.mylayoutbox,
+                }
             },
-            wibox.widget.textclock(),
-            {
-                layout = wibox.layout.fixed.horizontal,
-                s.mylayoutbox,
-            }
+            widget = wibox.container.margin
         },
-        widget = wibox.container.margin
-    })
-
-    topRight.x = s.geometry.x + s.geometry.width - topRight.width - gap
-    topRight.y = s.geometry.y + gap
-
-    local middleBottom = wibox({
-        width = s.geometry.width / 2,
-        height = wiboxHeight * 2,
-        shape = function(cr, width, height)
-            gears.shape.rounded_bar(cr, width, height)
-        end
-    })
-
-    middleBottom:setup {
-        layout = wibox.layout.align.horizontal,
-        s.mytasklist
+        maximum_width = dpi(1000),
+        maximum_height = wiboxHeight,
+        placement = function(c)
+            return awful.placement.top_right(c, { margins = beautiful.useless_gap })
+        end,
+        ontop = true,
+        visible = true,
+        screen = s,
     }
 
-    middleBottom.x = s.geometry.x + s.geometry.width / 2 - middleBottom.width / 2
-    middleBottom.y = s.geometry.y + s.geometry.height - middleBottom.height - gap
+    topRight:struts({
+        top = topRight.height + beautiful.useless_gap * 2,
+        left = 0,
+        bottom = 0,
+        right = 0
+    })
+
+    --topRight.x = s.geometry.x + s.geometry.width - topRight.width - gap
+    --topRight.y = s.geometry.y + gap
+
+    local middleBottom = awful.popup({
+        widget = {
+            layout = wibox.layout.align.horizontal,
+            s.mytasklist
+        },
+        maximum_width = s.geometry.width / 2,
+        maximum_height = wiboxHeight * 1.75,
+        placement = awful.placement.bottom,
+        ontop = true,
+        visible = true,
+        screen = s,
+    })
 
     local topLeft = wibox({ width = dpi(100), height = wiboxHeight })
 
@@ -242,20 +248,25 @@ function ThemeConfig:createHud(s, tasklist_buttons, taglist_buttons)
     topLeft.x = s.geometry.x + gap
     topLeft.y = s.geometry.y + gap
 
-    local commandPrompt = wibox({ width = dpi(300), height = wiboxHeight })
-
-    commandPrompt:setup({
-        {
-            layout = wibox.layout.align.horizontal,
-            s.mypromptbox
+    local commandPrompt = awful.popup{ 
+        widget = {
+            {
+                layout = wibox.layout.align.horizontal,
+                s.mypromptbox
+            },
+            top = 4,
+            bottom = 4,
+            widget = wibox.container.margin,
         },
-        top = 4,
-        bottom = 4,
-        widget = wibox.container.margin,
-    })
+        maximum_width = dpi(300),
+        maximum_height = wiboxHeight,
+        ontop = true,
+        placement = awful.placement.centered,
+        screen = s,
+    }
 
-    commandPrompt.x = s.geometry.x + s.geometry.width / 2 - commandPrompt.width / 2
-    commandPrompt.y = s.geometry.y + s.geometry.height / 2
+    --commandPrompt.x = s.geometry.x + s.geometry.width / 2 - commandPrompt.width / 2
+    --commandPrompt.y = s.geometry.y + s.geometry.height / 2
 
 
     s.mywibox = {
@@ -267,14 +278,11 @@ function ThemeConfig:createHud(s, tasklist_buttons, taglist_buttons)
 
     for _, val in pairs(s.mywibox) do
         val.screen = s
+        val.bg = "ffffff00"
 
         val.ontop = true
         val.visible = true
         val.input_passthrough = false
-
-        if val.shape == nil then
-            val.shape = gears.shape.rounded_bar
-        end
     end
 
     commandPrompt.visible = false

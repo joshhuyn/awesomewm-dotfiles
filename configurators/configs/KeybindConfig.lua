@@ -183,7 +183,7 @@ function KeybindConfig:setGlobalKeys()
                     end
                 end
 
-                if s.mywibox.MB.visible then
+                if false and s.mywibox.MB.visible then
                     s.mywibox.MB:struts({
                         top = 0,
                         left = 0,
