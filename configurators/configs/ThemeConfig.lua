@@ -1,6 +1,12 @@
 local awful = require("awful")
 local beautiful = require("beautiful")
 local dpi   = require("beautiful.xresources").apply_dpi
+local cpu_widget = require('awesome-wm-widgets.cpu-widget.cpu-widget')
+local ram_widget = require('awesome-wm-widgets.ram-widget.ram-widget')
+local apt_widget = require('awesome-wm-widgets.apt-widget.apt-widget')
+local docker_widget = require('awesome-wm-widgets.docker-widget.docker')
+local volume_widget = require('awesome-wm-widgets.volume-widget.volume')
+local logout_menu_widget = require("awesome-wm-widgets.logout-menu-widget.logout-menu")
 local gears = require("gears")
 local wibox = require("wibox")
 local naughty = require("naughty")
@@ -189,6 +195,12 @@ function ThemeConfig:createHud(s, tasklist_buttons, taglist_buttons)
                 {
                     layout = wibox.layout.fixed.horizontal,
                     awful.widget.keyboardlayout(),
+                    cpu_widget(),
+                    ram_widget(),
+                    volume_widget(),
+                    apt_widget(),
+                    docker_widget(),
+                    logout_menu_widget(),
                     wibox.widget.systray(),
                     -- battery TODO 
                 },
