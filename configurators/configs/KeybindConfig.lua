@@ -4,6 +4,9 @@ local gears = require("gears")
 local hotkeys_popup = require("awful.hotkeys_popup")
 local menubar = require("menubar")
 local naughty = require("naughty")
+local run_shell = require("awesome-wm-widgets.run-shell.run-shell")
+local cmus_widget = require('awesome-wm-widgets.cmus-widget.cmus')
+local xrandr = require("xrandr")
 
 KeybindConfig = { }
 
@@ -78,6 +81,8 @@ function KeybindConfig:setGlobalKeys()
         awful.key({ MODKEY,           }, "Escape", awful.tag.history.restore,
             {description = "go back", group = "tag"}),
 
+        awful.key({ MODKEY, 'Shift'}, "Escape", function() xrandr.xrandr() end),
+
         awful.key({ MODKEY,           }, KEYMAP.h,
             function ()
                 awful.client.focus.byidx( 1)
@@ -149,13 +154,15 @@ function KeybindConfig:setGlobalKeys()
             {description = "restore minimized", group = "client"}),
 
         -- Prompt
-        awful.key({ MODKEY },            KEYMAP.r,     function ()
-            awful.screen.focused().mywibox.cmd.visible = true
-            awful.screen.focused().mypromptbox:run()
-        end, {description = "run prompt", group = "launcher"}),
+        --awful.key({ MODKEY },            KEYMAP.r,     function ()
+            --awful.screen.focused().mywibox.cmd.visible = true
+            --awful.screen.focused().mypromptbox:run()
+        --end, {description = "run prompt", group = "launcher"}),
+        awful.key({ MODKEY }, KEYMAP.r, function () run_shell.launch() end),
 
         awful.key({ MODKEY }, KEYMAP.x,
             function ()
+                awful.screen.focused().mywibox.cmd.visible = true
                 awful.prompt.run {
                     prompt       = "Run Lua code: ",
                     textbox      = awful.screen.focused().mypromptbox.widget,
@@ -299,7 +306,13 @@ function KeybindConfig:createClientKeys()
                 c.maximized_horizontal = not c.maximized_horizontal
                 c:raise()
             end ,
-            {description = "(un)maximize horizontally", group = "client"})
+            {description = "(un)maximize horizontally", group = "client"}),
+
+        awful.key({}, "XF86AudioPlay",  function () cmus_widget:play()       end, {description = "play track",     group = "cmus"}),
+        awful.key({}, "XF86AudioPause", function () cmus_widget:play()       end, {description = "pause track",    group = "cmus"}),
+        awful.key({}, "XF86AudioNext",  function () cmus_widget:next_track() end, {description = "next track",     group = "cmus"}),
+        awful.key({}, "XF86AudioPrev",  function () cmus_widget:prev_track() end, {description = "previous track", group = "cmus"}),
+        awful.key({}, "XF86AudioStop",  function () cmus_widget:stop()       end, {description = "stop track",      group = "cmus"})
     )
 end
 

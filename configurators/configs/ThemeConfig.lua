@@ -3,9 +3,12 @@ local beautiful = require("beautiful")
 local dpi   = require("beautiful.xresources").apply_dpi
 local cpu_widget = require('awesome-wm-widgets.cpu-widget.cpu-widget')
 local ram_widget = require('awesome-wm-widgets.ram-widget.ram-widget')
+local fs_widget = require("awesome-wm-widgets.fs-widget.fs-widget")
 local apt_widget = require('awesome-wm-widgets.apt-widget.apt-widget')
+local net_speed_widget = require('awesome-wm-widgets.net-speed-widget.net-speed')
 local docker_widget = require('awesome-wm-widgets.docker-widget.docker')
 local volume_widget = require('awesome-wm-widgets.volume-widget.volume')
+local todo_widget = require("awesome-wm-widgets.todo-widget.todo")
 local logout_menu_widget = require("awesome-wm-widgets.logout-menu-widget.logout-menu")
 local gears = require("gears")
 local wibox = require("wibox")
@@ -191,20 +194,18 @@ function ThemeConfig:createHud(s, tasklist_buttons, taglist_buttons)
     local topRight = awful.popup {
         widget = {
             {
-                layout = wibox.layout.align.horizontal,
+                layout = wibox.layout.fixed.horizontal,
                 {
                     layout = wibox.layout.fixed.horizontal,
                     awful.widget.keyboardlayout(),
-                    cpu_widget(),
-                    ram_widget(),
+                    todo_widget(),
                     volume_widget(),
                     apt_widget(),
                     docker_widget(),
                     logout_menu_widget(),
                     wibox.widget.systray(),
-                    -- battery TODO 
+                    wibox.widget.textclock(),
                 },
-                wibox.widget.textclock(),
                 {
                     layout = wibox.layout.fixed.horizontal,
                     s.mylayoutbox,
@@ -212,7 +213,7 @@ function ThemeConfig:createHud(s, tasklist_buttons, taglist_buttons)
             },
             widget = wibox.container.margin
         },
-        maximum_width = dpi(1000),
+        maximum_width = dpi(2000),
         maximum_height = wiboxHeight,
         placement = function(c)
             return awful.placement.top_right(c, { margins = beautiful.useless_gap })
@@ -229,12 +230,9 @@ function ThemeConfig:createHud(s, tasklist_buttons, taglist_buttons)
         right = 0
     })
 
-    --topRight.x = s.geometry.x + s.geometry.width - topRight.width - gap
-    --topRight.y = s.geometry.y + gap
-
-    local middleBottom = awful.popup({
+    local middleBottom = awful.popup {
         widget = {
-            layout = wibox.layout.align.horizontal,
+            layout = wibox.layout.fixed.horizontal,
             s.mytasklist
         },
         maximum_width = s.geometry.width / 2,
@@ -243,27 +241,37 @@ function ThemeConfig:createHud(s, tasklist_buttons, taglist_buttons)
         ontop = true,
         visible = true,
         screen = s,
-    })
+    }
 
-    local topLeft = wibox({ width = dpi(100), height = wiboxHeight })
+    local net_widget = net_speed_widget()
+    net_widget.width = dpi(200)
 
-    topLeft:setup({
-        {
-            layout = wibox.layout.align.horizontal,
-            s.mytaglist
+    local topLeft = awful.popup {
+        widget = {
+            layout = wibox.layout.fixed.horizontal,
+            {
+                layout = wibox.layout.fixed.horizontal,
+                s.mytaglist,
+            },
+            {
+                layout = wibox.layout.fixed.horizontal,
+                net_widget,
+                cpu_widget(),
+                ram_widget(),
+                fs_widget(),
+            }
         },
-        top = 4,
-        bottom = 4,
-        widget = wibox.container.margin
-    })
+        maximum_height = wiboxHeight,
+        placement = awful.placement.top_left,
+        ontop = true,
+        visible = true
+    }
 
-    topLeft.x = s.geometry.x + gap
-    topLeft.y = s.geometry.y + gap
 
-    local commandPrompt = awful.popup{ 
+    local commandPrompt = awful.popup{
         widget = {
             {
-                layout = wibox.layout.align.horizontal,
+                layout = wibox.layout.fixed.horizontal,
                 s.mypromptbox
             },
             top = 4,
@@ -337,7 +345,7 @@ function ThemeConfig:setupTitlebar()
                 awful.titlebar.widget.closebutton    (c),
                 layout = wibox.layout.fixed.horizontal()
             },
-            layout = wibox.layout.align.horizontal
+            layout = wibox.layout.fixed.horizontal
         }
     end)
 end
