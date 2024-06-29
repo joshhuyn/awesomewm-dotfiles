@@ -10,6 +10,9 @@ local docker_widget = require('awesome-wm-widgets.docker-widget.docker')
 local volume_widget = require('awesome-wm-widgets.volume-widget.volume')
 local todo_widget = require("awesome-wm-widgets.todo-widget.todo")
 local logout_menu_widget = require("awesome-wm-widgets.logout-menu-widget.logout-menu")
+local battery_widget = require("awesome-wm-widgets.batteryarc-widget.batteryarc")
+local player_widget = require("awesome-wm-widgets.mpris-widget")
+local weather_widget = require("awesome-wm-widgets.weather-widget.weather")
 local gears = require("gears")
 local wibox = require("wibox")
 local naughty = require("naughty")
@@ -62,23 +65,6 @@ function ThemeConfig:setupTheme()
     theme.layout_fullscreen = theme.resDir .. "/icons/fullscreen.png"
     theme.layout_magnifier = theme.resDir .. "/icons/magnifier.png"
     theme.layout_floating = theme.resDir .. "/icons/floating.png"
-    theme.widget_ac = theme.resDir .. "/icons/ac.png"
-    theme.widget_battery = theme.resDir .. "/icons/battery.png"
-    theme.widget_battery_low = theme.resDir .. "/icons/battery_low.png"
-    theme.widget_battery_empty = theme.resDir .. "/icons/battery_empty.png"
-    theme.widget_mem = theme.resDir .. "/icons/mem.png"
-    theme.widget_cpu = theme.resDir .. "/icons/cpu.png"
-    theme.widget_temp = theme.resDir .. "/icons/temp.png"
-    theme.widget_net = theme.resDir .. "/icons/net.png"
-    theme.widget_hdd = theme.resDir .. "/icons/hdd.png"
-    theme.widget_music = theme.resDir .. "/icons/note.png"
-    theme.widget_music_on = theme.resDir .. "/icons/note_on.png"
-    theme.widget_vol = theme.resDir .. "/icons/vol.png"
-    theme.widget_vol_low = theme.resDir .. "/icons/vol_low.png"
-    theme.widget_vol_no = theme.resDir .. "/icons/vol_no.png"
-    theme.widget_vol_mute = theme.resDir .. "/icons/vol_mute.png"
-    theme.widget_mail = theme.resDir .. "/icons/mail.png"
-    theme.widget_mail_on = theme.resDir .. "/icons/mail_on.png"
     theme.tasklist_plain_task_name = true
     theme.tasklist_disable_icon = false
     theme.useless_gap = dpi(2)
@@ -191,23 +177,30 @@ function ThemeConfig:createHud(s, tasklist_buttons, taglist_buttons)
     local wiboxHeight = beautiful.get_font_height(nil) * 1.5
     local gap = beautiful.useless_gap
 
+
     local topRight = awful.popup {
         widget = {
             {
                 layout = wibox.layout.fixed.horizontal,
                 {
                     layout = wibox.layout.fixed.horizontal,
+                    weather_widget({
+                        api_key='fb3f868a6d2869f6c4dd37a8b075b809',
+                        coordinates = {50.2883, 8.9434},
+                        time_format_12h = false,
+                        units = "metric",
+                        both_units_widget = true,
+                    }),
+                    player_widget(),
                     awful.widget.keyboardlayout(),
                     todo_widget(),
                     volume_widget(),
                     apt_widget(),
                     docker_widget(),
                     logout_menu_widget(),
+                    battery_widget(),
                     wibox.widget.systray(),
                     wibox.widget.textclock(),
-                },
-                {
-                    layout = wibox.layout.fixed.horizontal,
                     s.mylayoutbox,
                 }
             },
