@@ -189,24 +189,6 @@ function KeybindConfig:setGlobalKeys()
                         val.input_passthrough = not val.input_passthrough
                     end
                 end
-
-                if false and s.mywibox.MB.visible then
-                    s.mywibox.MB:struts({
-                        top = 0,
-                        left = 0,
-                        bottom = (s.mywibox.MB.visible and s.mywibox.MB.height + beautiful.useless_gap or 0),
-                        right = 0,
-                    })
-                end
-
-                if s.mywibox.TL.visible then
-                    s.mywibox.TL:struts({
-                        top = (s.mywibox.TL.visible and s.mywibox.TL.height + beautiful.useless_gap or 0),
-                        left = 0,
-                        bottom = 0,
-                        right = 0
-                    })
-                end
             end
         end, {
                 description = "hide ui elements",

@@ -38,7 +38,7 @@ function ThemeConfig:setupTheme()
     theme.fg_focus = "#189BCC"
     theme.fg_urgent = "#CC9393"
     theme.bg_normal = "#14213d"
-    theme.bg_focus = "#00"
+    theme.bg_focus = "#741d2d"
     theme.bg_urgent = "#14213d"
     theme.border_width = dpi(2)
     theme.border_normal = "#00000000"
@@ -177,89 +177,58 @@ function ThemeConfig:createHud(s, tasklist_buttons, taglist_buttons)
     local wiboxHeight = beautiful.get_font_height(nil) * 1.5
     local gap = beautiful.useless_gap
 
-
-    local topRight = awful.popup {
-        widget = {
-            {
-                layout = wibox.layout.fixed.horizontal,
-                {
-                    layout = wibox.layout.fixed.horizontal,
-                    weather_widget({
-                        api_key='fb3f868a6d2869f6c4dd37a8b075b809',
-                        coordinates = {50.2883, 8.9434},
-                        time_format_12h = false,
-                        units = "metric",
-                        both_units_widget = true,
-                    }),
-                    player_widget(),
-                    awful.widget.keyboardlayout(),
-                    todo_widget(),
-                    volume_widget(),
-                    apt_widget(),
-                    docker_widget(),
-                    logout_menu_widget(),
-                    battery_widget(),
-                    wibox.widget.systray(),
-                    wibox.widget.textclock(),
-                    s.mylayoutbox,
-                }
-            },
-            widget = wibox.container.margin
-        },
-        maximum_width = dpi(2000),
-        maximum_height = wiboxHeight,
-        placement = function(c)
-            return awful.placement.top_right(c, { margins = beautiful.useless_gap })
-        end,
-        ontop = true,
-        visible = true,
-        screen = s,
-    }
-
-    topRight:struts({
-        top = topRight.height + beautiful.useless_gap * 2,
-        left = 0,
-        bottom = 0,
-        right = 0
-    })
-
-    local middleBottom = awful.popup {
-        widget = {
-            layout = wibox.layout.fixed.horizontal,
-            s.mytasklist
-        },
-        maximum_width = s.geometry.width / 2,
-        maximum_height = wiboxHeight * 1.75,
-        placement = awful.placement.bottom,
-        ontop = true,
-        visible = true,
-        screen = s,
-    }
-
     local net_widget = net_speed_widget()
     net_widget.width = dpi(200)
 
-    local topLeft = awful.popup {
+    local top = awful.popup {
         widget = {
-            layout = wibox.layout.fixed.horizontal,
+            layout = wibox.layout.align.horizontal,
+            --inner_fill_strategy = "inner_spacing",
             {
                 layout = wibox.layout.fixed.horizontal,
                 s.mytaglist,
-            },
-            {
-                layout = wibox.layout.fixed.horizontal,
                 net_widget,
                 cpu_widget(),
                 ram_widget(),
                 fs_widget(),
-            }
+            },
+            {
+                layout = wibox.layout.fixed.horizontal,
+                s.mytasklist
+            },
+            {
+                layout = wibox.layout.fixed.horizontal,
+                player_widget(),
+                awful.widget.keyboardlayout(),
+                todo_widget(),
+                volume_widget(),
+                apt_widget(),
+                docker_widget(),
+                logout_menu_widget(),
+                battery_widget(),
+                wibox.widget.systray(),
+                wibox.widget.textclock(),
+                s.mylayoutbox,
+            },
         },
+        --minimum_width = s.geometry.width - beautiful.useless_gap,
         maximum_height = wiboxHeight,
-        placement = awful.placement.top_left,
+        placement = function(c)
+            awful.placement.maximize_horizontally(c)
+            return awful.placement.top(c, { margins = beautiful.useless_gap })
+        end,
+        bg = "#741d2d",
         ontop = true,
-        visible = true
+        visible = true,
+        screen = s
     }
 
+    top:struts({
+        top = top.height + beautiful.useless_gap * 2,
+        left = 0,
+        bottom = 0,
+        right = 0
+    })
 
     local commandPrompt = awful.popup{
         widget = {
@@ -283,18 +252,15 @@ function ThemeConfig:createHud(s, tasklist_buttons, taglist_buttons)
 
 
     s.mywibox = {
-        TL = topLeft,
-        TR = topRight,
-        MB = middleBottom,
-        cmd = commandPrompt
+        cmd = commandPrompt,
+        top = top
     }
 
     for _, val in pairs(s.mywibox) do
         val.screen = s
-        val.bg = "ffffff00"
+        --val.bg = "ffffff"
 
         val.ontop = true
-        val.visible = true
         val.input_passthrough = false
     end
 
