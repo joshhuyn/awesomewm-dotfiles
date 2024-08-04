@@ -4,7 +4,6 @@ local gears = require("gears")
 local hotkeys_popup = require("awful.hotkeys_popup")
 local menubar = require("menubar")
 local naughty = require("naughty")
-local run_shell = require("awesome-wm-widgets.run-shell.run-shell")
 local cmus_widget = require('awesome-wm-widgets.cmus-widget.cmus')
 local xrandr = require("xrandr")
 
@@ -154,11 +153,10 @@ function KeybindConfig:setGlobalKeys()
             {description = "restore minimized", group = "client"}),
 
         -- Prompt
-        --awful.key({ MODKEY },            KEYMAP.r,     function ()
-            --awful.screen.focused().mywibox.cmd.visible = true
-            --awful.screen.focused().mypromptbox:run()
-        --end, {description = "run prompt", group = "launcher"}),
-        awful.key({ MODKEY }, KEYMAP.r, function () run_shell.launch() end),
+        awful.key({ MODKEY },            KEYMAP.r,     function ()
+            awful.screen.focused().mywibox.cmd.visible = true
+            awful.screen.focused().mypromptbox:run()
+        end, {description = "run prompt", group = "launcher"}),
 
         awful.key({ MODKEY }, KEYMAP.x,
             function ()
@@ -179,9 +177,11 @@ function KeybindConfig:setGlobalKeys()
         awful.key({ MODKEY }, KEYMAP.p, function() menubar.show() end,
             {description = "show the menubar", group = "launcher"}),
 
-        awful.key({ MODKEY, "Shift" }, KEYMAP.e, function() IS_MOUSE_LOCKED = not IS_MOUSE_LOCKED end),
+        awful.key({ MODKEY, "Shift" }, KEYMAP.e, function()
+            IS_MOUSE_LOCKED = not IS_MOUSE_LOCKED
+        end),
 
-        awful.key({ MODKEY }, KEYMAP.e, function()
+        awful.key({ MODKEY, "Control" }, KEYMAP.e, function()
             for s in screen do
                 for key, val in pairs(s.mywibox) do
                     if key ~= "cmd" then
@@ -189,27 +189,21 @@ function KeybindConfig:setGlobalKeys()
                         val.input_passthrough = not val.input_passthrough
                     end
                 end
+            end
+        end, {
+                description = "hide ui elements for all screens",
+                group = "custom"
+            }),
 
-                if false and s.mywibox.MB.visible then
-                    s.mywibox.MB:struts({
-                        top = 0,
-                        left = 0,
-                        bottom = (s.mywibox.MB.visible and s.mywibox.MB.height + beautiful.useless_gap or 0),
-                        right = 0,
-                    })
-                end
-
-                if s.mywibox.TL.visible then
-                    s.mywibox.TL:struts({
-                        top = (s.mywibox.TL.visible and s.mywibox.TL.height + beautiful.useless_gap or 0),
-                        left = 0,
-                        bottom = 0,
-                        right = 0
-                    })
+        awful.key({ MODKEY }, KEYMAP.e, function()
+            for key, val in pairs(awful.screen.focused().mywibox) do
+                if key ~= "cmd" then
+                    val.visible = not val.visible
+                    val.input_passthrough = not val.input_passthrough
                 end
             end
         end, {
-                description = "hide ui elements",
+                description = "hide ui elements for screen",
                 group = "custom"
             })
     )

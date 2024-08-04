@@ -1,7 +1,5 @@
 pcall(require, "luarocks.loader")
 
-os.execute("~/.config/awesome/prestartup.sh")
-IS_MOUSE_LOCKED = false
 
 require("awful.autofocus")
 require("awful.hotkeys_popup.keys")
@@ -10,6 +8,9 @@ local awful = require("awful")
 local gears = require("gears")
 local beautiful = require("beautiful")
 local configHandler = require("configurators/ConfigHandler"):setup()
+
+--awful.screen.set_auto_dpi_enabled(true)
+IS_MOUSE_LOCKED = false
 
 function handle_mouse_lock(c)
         if IS_MOUSE_LOCKED then
